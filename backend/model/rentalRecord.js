@@ -1,12 +1,16 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
+import Student from './student.js';
+import Book from './book.js';
+const { Schema, model } = mongoose;
 
-const rentalRecordSchema = new mongoose.Schema({
-    student_name: { type: String, required: true },
-    book_name: { type: String, required: true },
+const rentalRecordSchema = new Schema({
+    student: { type: {Student}, required: true },
+    book: { type: {Book}, required: true },
     rental_date: { type: Date, required: true },
     paid: { type: Boolean, requied: true },
     payment_due: { type: Number, required: true },
-    comment: { type: String, required: true },
+    comment: { type: String, required: false },
 });
 
-module.exports = mongoose.model('RentalRecord', rentalRecordSchema);
+const RentalRecord = model('RentalRecord', rentalRecordSchema);
+export default RentalRecord;
