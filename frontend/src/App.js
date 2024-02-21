@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import AddStudentModal from './student/AddStudentModal';
+import AddBookModal from './student/AddBookModal';
+import AddRentalRecordModal from './student/AddRentalRecordModal';
 
 const App = () => {
   const [students, setStudent] = useState([]);
   const [books, setBook] = useState([]);
+  const [rentalRecords, setRentalRecords] = useState([]);
+  const [openStudent, setOpenStudent] = useState(false);
+  const [openBook, setOpenBook] = useState(false);
+  const [openRentalRecord, setOpenRentalRecord] = useState(false);
 
   useEffect(() => {
     getAllStudents();
@@ -21,46 +28,7 @@ const App = () => {
     if (!response.ok) {
       throw new Error(responseData.message);
     }
-    console.log("responseData: ", responseData);
     setStudent(responseData.students);
-  };
-
-  const createStudent = async () => {
-    const body = {
-      first_name: "John",
-      last_name: "Doe",
-      age:  5,
-      book_rental: [],
-    };
-    const response = await fetch(
-      "http://localhost:5000/api/student/create", {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(body),
-      }
-    );
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(responseData.message);
-    }
-    console.log("responseData: ", responseData);
-  };
-
-  const editStudent = async () => {
-    const response = await fetch(
-      "http://localhost:5000/api/student/edit", {
-        method: "PUT",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(students[0]),
-      }
-    );
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(responseData.message);
-    }
-    console.log("responseData: ", responseData);
   };
 
   const getAllBooks = async () => {
@@ -72,29 +40,7 @@ const App = () => {
     if (!response.ok) {
       throw new Error(responseData.message);
     }
-    console.log("responseData: ", responseData);
     setBook(responseData.books);
-  };
-
-  const createBook = async () => {
-    const body = {
-      name: 'Calculus I',
-      description:  'Math book about Calculus I',
-      price:  50,
-    };
-    const response = await fetch(
-      "http://localhost:5000/api/book/create", {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(body),
-      }
-    );
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(responseData.message);
-    }
-    console.log("responseData: ", responseData);
   };
 
   const getAllRentalRecord = async () => {
@@ -106,42 +52,33 @@ const App = () => {
     if (!response.ok) {
       throw new Error(responseData.message);
     }
-    console.log("responseData: ", responseData);
-  };
-
-  const createRentalRecord = async () => {
-    const body = {
-      student: students[0],
-      book: books[0],
-      rental_date: Date.now(),
-      paid: false,
-      payment_due: 50,
-      comment: 'Something',
-    };
-    const response = await fetch(
-      "http://localhost:5000/api/rentalRecord/create", {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(body),
-      }
-    );
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(responseData.message);
-    }
-    console.log("responseData: ", responseData);
-    students[0].book_rental = responseData.rentalRecords.book;
-    await editStudent();
+    setRentalRecords(responseData.rentalRecords);
   };
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <button onClick={createStudent}>Add Student</button>
-        <button onClick={createBook}>Add Book</button>
-        <button onClick={createRentalRecord}>Add Rental Record</button>
+        <button onClick={() => setOpenStudent(true)}>Add Student</button>
+        <button onClick={() => setOpenBook(true)}>Add Book</button>
+        <button onClick={() => setOpenRentalRecord(true)}>Add Rental Record</button>
+
+        <AddStudentModal
+          open={openStudent}
+          handleClose={() => setOpenStudent(false)}
+          getAllStudents={getAllStudents}
+        />
+        <AddBookModal
+          open={openBook}
+          handleClose={() => setOpenBook(false)}
+          getAllBooks={getAllBooks}
+        />
+        <AddRentalRecordModal
+          open={openRentalRecord}
+          handleClose={() => setOpenRentalRecord(false)}
+          studentList={students}
+          bookList={books}
+        />
       </header>
     </div>
   );
