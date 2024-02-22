@@ -81,7 +81,7 @@ class AddRentalRecordModal extends React.Component {
                 onClose={this.closeModal}
                 PaperProps={{
                 component: 'form',
-                onSubmit: (event) => {
+                onSubmit: async (event) => {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
                     const recordJson = Object.fromEntries(formData.entries());
@@ -93,9 +93,9 @@ class AddRentalRecordModal extends React.Component {
                         payment_due: paid ? 0 : selectedBook.price,
                         comment: recordJson.comment,
                     };
-                    this.createRentalRecord(body);
+                    await this.createRentalRecord(body);
                     selectedStudent.book_rental.push(selectedBook);
-                    this.editStudent(selectedStudent);
+                    await this.editStudent(selectedStudent);
                     this.closeModal();
                 },
                 }}
