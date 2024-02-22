@@ -48,13 +48,31 @@ class RentalRecordTable extends React.Component {
     }
 
     componentWillReceiveProps() {
-        const { rentalRecords } = this.props;
+        const { rentalRecords, filterConditions } = this.props;
+        console.log(rentalRecords.length, filterConditions.length);
         rentalRecords.sort((a, b) => a.student.first_name > b.student.first_name ? 1 : -1);
         this.setState({ immutableRecords: rentalRecords, records: rentalRecords });
+
+        if (filterConditions.length !== 0) {
+            filterConditions.forEach((filter) => {
+                if (filter.selectedBook) {
+                    this.setState({ records: rentalRecords.filter((record) => record.book._id === filter.selectedBook._id)})
+                }
+                if (filter.selectedStudent) {
+                    this.setState({ records: rentalRecords.filter((record) => record.student._id === filter.selectedStudent._id)})
+                }
+                if (filter.paid === false || filter.paid) {
+                    this.setState({ records: rentalRecords.filter((record) => record.paid === filter.paid)});
+                }
+                if (filter.rental_date) {
+                    this.setState({ records: rentalRecords.filter((record) => moment(record.rental_date).format("DD/MMM/YYY") === moment(filter.rental_date).format("DD/MMM/YYY"))});
+                }
+            })
+        }
     }
 
     render() {
-        const { isLoaded } = this.props;
+        const { isLoaded, setOpenFilter, filterConditions } = this.props;
         const { records, searchWord } = this.state;
         return (
             <Fragment>
@@ -68,7 +86,7 @@ class RentalRecordTable extends React.Component {
                         value={searchWord}
                         onChange={(e) => this.debounce(this.handleSearchChange(e.target.value))}
                     />
-                    <IconButton>
+                    <IconButton onClick={() => setOpenFilter(true)}>
                         <FilterAltIcon style={{ fill: "white" }} />
                     </IconButton>
                 </div>
@@ -121,6 +139,8 @@ class RentalRecordTable extends React.Component {
 React.propTypes = {
     rentalRecords: PropTypes.array,
     isLoaded: PropTypes.bool,
+    setOpenFilter: PropTypes.func,
+    filterConditions: PropTypes.Object,
 }
 
 export default RentalRecordTable;

@@ -5,15 +5,18 @@ import RentalRecordTable from './table/RentalRecordTable';
 import AddStudentModal from './modals/AddStudentModal';
 import AddBookModal from './modals/AddBookModal';
 import AddRentalRecordModal from './modals/AddRentalRecordModal';
+import FilterModal from './modals/FilterModal';
 
 const App = () => {
   const [students, setStudent] = useState([]);
   const [books, setBook] = useState([]);
   const [rentalRecords, setRentalRecords] = useState([]);
+  const [filterConditions, setFilterConditions] = useState([]);
   const [isLoaded, setisLoaded] = useState(false);
   const [openStudent, setOpenStudent] = useState(false);
   const [openBook, setOpenBook] = useState(false);
   const [openRentalRecord, setOpenRentalRecord] = useState(false);
+  const [openFilter, setOpenFilter] = useState(false);
 
   useEffect(() => {
     getAllStudents();
@@ -81,6 +84,8 @@ const App = () => {
         <RentalRecordTable
           rentalRecords={rentalRecords}
           isLoaded={isLoaded}
+          setOpenFilter={setOpenFilter}
+          filterConditions={filterConditions}
         />
         <AddStudentModal
           open={openStudent}
@@ -100,6 +105,16 @@ const App = () => {
           }}
           studentList={students}
           bookList={books}
+        />
+        <FilterModal
+          open={openFilter}
+          handleClose={() => {
+            setOpenFilter(false);
+            getAllRentalRecord();
+          }}
+          studentList={students}
+          bookList={books}
+          setFilterConditions={setFilterConditions}
         />
       </body>
     </div>
