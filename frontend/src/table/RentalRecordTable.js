@@ -42,31 +42,35 @@ class RentalRecordTable extends React.Component {
             this.setState({ records: immutableRecords, searchWord:  value });
             return;
         }
-        const { records } = this.state;
-        const filteredRecords = records.filter((r) => r.student.first_name.toLowerCase().includes(value));
+        const filteredRecords = immutableRecords.filter((r) => r.student.first_name.toLowerCase().includes(value));
         this.setState({ records: filteredRecords, searchWord:  value });
+    }
+    
+    componentDidMount() {
+        const { rentalRecords } = this.props;
+        rentalRecords.sort((a, b) => a.student.first_name > b.student.first_name ? 1 : -1);
+        this.setState({ immutableRecords: rentalRecords, records: rentalRecords });
     }
 
     componentWillReceiveProps() {
         const { rentalRecords, filterConditions } = this.props;
-        console.log(rentalRecords.length, filterConditions.length);
-        rentalRecords.sort((a, b) => a.student.first_name > b.student.first_name ? 1 : -1);
         this.setState({ immutableRecords: rentalRecords, records: rentalRecords });
-
+        let tmpArray = [...rentalRecords];
         if (filterConditions.length !== 0) {
             filterConditions.forEach((filter) => {
                 if (filter.selectedBook) {
-                    this.setState({ records: rentalRecords.filter((record) => record.book._id === filter.selectedBook._id)})
+                    tmpArray = tmpArray.filter((record) => record.book._id === filter.selectedBook._id);
                 }
                 if (filter.selectedStudent) {
-                    this.setState({ records: rentalRecords.filter((record) => record.student._id === filter.selectedStudent._id)})
+                    tmpArray = tmpArray.filter((record) => record.student._id === filter.selectedStudent._id)
                 }
                 if (filter.paid === false || filter.paid) {
-                    this.setState({ records: rentalRecords.filter((record) => record.paid === filter.paid)});
+                    tmpArray = tmpArray.filter((record) => record.paid === filter.paid);
                 }
                 if (filter.rental_date) {
-                    this.setState({ records: rentalRecords.filter((record) => moment(record.rental_date).format("DD/MMM/YYY") === moment(filter.rental_date).format("DD/MMM/YYY"))});
+                    tmpArray = tmpArray.filter((record) => moment(record.rental_date).format("DD/MMM/YYY") === moment(filter.rental_date).format("DD/MMM/YYY"));
                 }
+                this.setState({ records: tmpArray });
             })
         }
     }
@@ -86,8 +90,14 @@ class RentalRecordTable extends React.Component {
                         value={searchWord}
                         onChange={(e) => this.debounce(this.handleSearchChange(e.target.value))}
                     />
-                    <IconButton onClick={() => setOpenFilter(true)}>
+                    <IconButton onClick={() => {
+                        setOpenFilter(true);
+                        this.handleSearchChange('');
+                    }}>
                         <FilterAltIcon style={{ fill: "white" }} />
+                    </IconButton>
+                    <IconButton style={{ color: 'white '}}>
+                        {filterConditions.length !== 0  ? filterConditions.length : ''}
                     </IconButton>
                 </div>
                 <div className='records-table'>

@@ -17,15 +17,16 @@ class FilterModal extends React.Component {
             selectedStudent: {},
             selectedBook: {},
             paid: null,
+            selectedDate: '',
         };
 
         this.closeModal = this.closeModal.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
     }
 
     closeModal() {
-        const { handleClose, setFilterConditions } = this.props;
-        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null });
-        setFilterConditions([]);
+        const { handleClose } = this.props;
+        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null, selectedDate: '' });
         handleClose();
     }
 
@@ -43,8 +44,12 @@ class FilterModal extends React.Component {
         this.setState({paid: event.target.value});
     }
 
+    handleDateChange(event) {
+        this.setState({ selectedDate: event.target.value });
+    }
+
     render() {
-        const { selectedBook, selectedStudent, paid } = this.state;
+        const { selectedBook, selectedStudent, paid, selectedDate } = this.state;
         const { open, handleClose, studentList, bookList, setFilterConditions } = this.props;
         return (
             <Dialog
@@ -69,7 +74,7 @@ class FilterModal extends React.Component {
                     if (recordJson.rental_date !== '') {
                         filterArray.push({ rental_date: recordJson.rental_date});
                     }
-                    await setFilterConditions(filterArray)
+                    await setFilterConditions(filterArray);
                     handleClose();
                 },
                 }}
@@ -104,6 +109,8 @@ class FilterModal extends React.Component {
                         type="date"
                         fullWidth
                         variant="standard"
+                        onChange={this.handleDateChange}
+                        value={selectedDate}
                     />
                     <br />
                     <br />
@@ -144,7 +151,10 @@ class FilterModal extends React.Component {
                     </Select>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={this.closeModal}>Clear</Button>
+                <Button onClick={async () => {
+                    await setFilterConditions([]);
+                    this.closeModal();
+                }}>Clear</Button>
                 <Button type="submit">Set Filter</Button>
                 </DialogActions>
             </Dialog>

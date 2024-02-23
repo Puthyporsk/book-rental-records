@@ -178,7 +178,6 @@ class AddRentalRecordModal extends React.Component {
                     <label htmlFor="comment">Comment</label>
                     <TextField
                         autoFocus
-                        required
                         margin="dense"
                         id="comment"
                         name="comment"
