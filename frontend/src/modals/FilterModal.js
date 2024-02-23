@@ -1,7 +1,7 @@
 import React from "react";
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
+import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -10,21 +10,23 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { PropTypes } from "prop-types";
 
-class AddRentalRecordModal extends React.Component {
+class FilterModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedStudent: {},
             selectedBook: {},
-            paid: false,
+            paid: null,
+            selectedDate: '',
         };
 
         this.closeModal = this.closeModal.bind(this);
+        this.handleDateChange = this.handleDateChange.bind(this);
     }
 
     closeModal() {
         const { handleClose } = this.props;
-        this.setState({ selectedBook: {}, selectedStudent: {}, paid: false });
+        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null, selectedDate: '' });
         handleClose();
     }
 
@@ -37,44 +39,18 @@ class AddRentalRecordModal extends React.Component {
         const { bookList } = this.props;
         this.setState({selectedBook: bookList.filter((book) => book._id === event.target.value)[0]});
     }
-    
+
     handlePaidChange(event) {
         this.setState({paid: event.target.value});
     }
 
-    async editStudent(student) {
-        const response = await fetch(
-          "http://localhost:5000/api/student/edit", {
-            method: "PUT",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(student),
-          }
-        );
-        const responseData = await response.json();
-    
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
-    }
-
-    async createRentalRecord(body) {
-        const response = await fetch(
-          "http://localhost:5000/api/rentalRecord/create", {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body),
-          }
-        );
-        const responseData = await response.json();
-    
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
+    handleDateChange(event) {
+        this.setState({ selectedDate: event.target.value });
     }
 
     render() {
-        const { selectedBook, selectedStudent, paid } = this.state;
-        const { open, studentList, bookList } = this.props;
+        const { selectedBook, selectedStudent, paid, selectedDate } = this.state;
+        const { open, handleClose, studentList, bookList, setFilterConditions } = this.props;
         return (
             <Dialog
                 open={open}
@@ -85,30 +61,34 @@ class AddRentalRecordModal extends React.Component {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
                     const recordJson = Object.fromEntries(formData.entries());
-                    const body = {
-                        student: selectedStudent,
-                        book: selectedBook,
-                        rental_date: recordJson.rental_date,
-                        paid: paid,
-                        payment_due: paid ? 0 : selectedBook.price,
-                        comment: recordJson.comment,
-                    };
-                    await this.createRentalRecord(body);
-                    selectedStudent.book_rental.push(selectedBook);
-                    await this.editStudent(selectedStudent);
-                    this.closeModal();
+                    let filterArray = [];
+                    if (Object.keys(selectedBook).length !== 0) {
+                        filterArray.push({selectedBook: selectedBook});
+                    }
+                    if (Object.keys(selectedStudent).length !== 0) {
+                        filterArray.push({selectedStudent: selectedStudent});
+                    }
+                    if (paid !== null) {
+                        filterArray.push({paid: paid});
+                    }
+                    if (recordJson.rental_date !== '') {
+                        filterArray.push({ rental_date: recordJson.rental_date});
+                    }
+                    await setFilterConditions(filterArray);
+                    handleClose();
                 },
                 }}
             >
-                <DialogTitle>Book Rental Record</DialogTitle>
+                <DialogTitle>Filter Rental Records</DialogTitle>
                 <DialogContent>
-                    <InputLabel id="student-label">Select A Student</InputLabel>
+                <InputLabel id="student-label">Select A Student</InputLabel>
                     <Select
                         labelId="student-label"
                         id="student"
                         fullWidth
                         label="Student"
                         onChange={(e) => this.handleStudentChange(e)}
+                        value={selectedStudent._id}
                     >
                         {studentList.map((student) => {
                             return (
@@ -119,6 +99,21 @@ class AddRentalRecordModal extends React.Component {
                         })}
                     </Select>
                     <br />
+                    <br />
+                    <label htmlFor="rental_date">Rental Date</label>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="rental_date"
+                        name="rental_date"
+                        type="date"
+                        fullWidth
+                        variant="standard"
+                        onChange={this.handleDateChange}
+                        value={selectedDate}
+                    />
+                    <br />
+                    <br />
                     <InputLabel id="book-label">Select A Book</InputLabel>
                     <Select
                         labelId="book-label"
@@ -126,6 +121,7 @@ class AddRentalRecordModal extends React.Component {
                         fullWidth
                         label="Book"
                         onChange={(e) => this.handleBookChange(e)}
+                        value={selectedBook._id}
                     >
                         {bookList.map((book) => {
                             return (
@@ -136,17 +132,7 @@ class AddRentalRecordModal extends React.Component {
                         })}
                     </Select>
                     <br />
-                    <label htmlFor="rental_date">Rental Date</label>
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="rental_date"
-                        name="rental_date"
-                        type="date"
-                        fullWidth
-                        variant="standard"
-                    />
+                    <br />
                     <InputLabel id="paid-label">Paid</InputLabel>
                     <Select
                         labelId="paid-label"
@@ -154,6 +140,7 @@ class AddRentalRecordModal extends React.Component {
                         fullWidth
                         label="Paid"
                         onChange={(e) => this.handlePaidChange(e)}
+                        value={paid}
                     >
                         <MenuItem value={true}>
                             <em>Yes</em>
@@ -162,45 +149,26 @@ class AddRentalRecordModal extends React.Component {
                             <em>No</em>
                         </MenuItem>
                     </Select>
-                    <br />
-                    <label htmlFor="payment_due">Payment Due</label>
-                    <TextField
-                        disabled={paid}
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="payment_due"
-                        name="payment_due"
-                        fullWidth
-                        variant="standard"
-                        value={!paid && selectedBook.price ? `$${selectedBook.price}` : ''}
-                    />
-                    <label htmlFor="comment">Comment</label>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="comment"
-                        name="comment"
-                        label="Comment"
-                        type="string"
-                        fullWidth
-                        variant="standard"
-                    />
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={this.closeModal}>Cancel</Button>
-                <Button type="submit">Add Rental Record</Button>
+                <Button onClick={async () => {
+                    await setFilterConditions([]);
+                    this.closeModal();
+                }}>Clear</Button>
+                <Button type="submit">Set Filter</Button>
                 </DialogActions>
             </Dialog>
         );
     }
 }
 
-React.propTypes = {
+FilterModal.propTypes = {
     open: PropTypes.bool,
     handleClose: PropTypes.func,
+    getAllBooks: PropTypes.func,
     studentList: PropTypes.array,
     bookList: PropTypes.array,
+    setFilterConditions: PropTypes.func,
 }
 
-export default AddRentalRecordModal;
+export default FilterModal;
