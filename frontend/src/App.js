@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.css';
 
 import RentalRecordTable from './table/RentalRecordTable';
@@ -69,7 +69,10 @@ class App extends React.Component {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-
+      responseData.rentalRecords.forEach((record) => {
+        record.student = record.student[0];
+        record.book = record.book[0];
+      });
       this.setState({ rentalRecords: responseData.rentalRecords.sort((a, b) => a.student.first_name > b.student.first_name ? 1 : -1), isLoaded: true });
     } catch (err) {
       console.error(err);

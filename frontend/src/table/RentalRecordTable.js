@@ -13,7 +13,6 @@ import {
 import PropTypes from 'prop-types';
 import moment from "moment";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 class RentalRecordTable extends React.Component {
     constructor(props) {
@@ -111,7 +110,6 @@ class RentalRecordTable extends React.Component {
                             <TableCell align="right">Paid</TableCell>
                             <TableCell align="right">Payment Due</TableCell>
                             <TableCell align="right">Comment</TableCell>
-                            <TableCell align="right"></TableCell>
                         </TableRow>
                         </TableHead>
                         <TableBody>
@@ -129,11 +127,6 @@ class RentalRecordTable extends React.Component {
                                         <TableCell align="right">{record.paid ? 'PAID' : 'UNPAID'}</TableCell>
                                         <TableCell align="right">${record.payment_due}</TableCell>
                                         <TableCell align="right">{record.comment}</TableCell>
-                                        <TableCell align="right">
-                                            <IconButton>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
                                     </TableRow>
                                 ))
                             ) : (<>Loading...</>)}
