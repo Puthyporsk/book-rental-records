@@ -5,9 +5,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Select from '@mui/material/Select';
+import Select from 'react-select';
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import { PropTypes } from "prop-types";
 
 class AddRentalRecordModal extends React.Component {
@@ -16,7 +15,7 @@ class AddRentalRecordModal extends React.Component {
         this.state = {
             selectedStudent: {},
             selectedBook: {},
-            paid: false,
+            paid: null,
         };
 
         this.closeModal = this.closeModal.bind(this);
@@ -24,22 +23,28 @@ class AddRentalRecordModal extends React.Component {
 
     closeModal() {
         const { handleClose } = this.props;
-        this.setState({ selectedBook: {}, selectedStudent: {}, paid: false });
+        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null });
         handleClose();
     }
 
     handleStudentChange(event) {
         const { studentList } = this.props;
-        this.setState({selectedStudent: studentList.filter((student) => student._id === event.target.value)[0]});
+        if (event) {
+            this.setState({selectedStudent: studentList.filter((student) => student._id === event.value)[0]});
+        }
     }
 
     handleBookChange(event) {
         const { bookList } = this.props;
-        this.setState({selectedBook: bookList.filter((book) => book._id === event.target.value)[0]});
+        if (event) {
+            this.setState({selectedBook: bookList.filter((book) => book._id === event.value)[0]});
+        }
     }
     
     handlePaidChange(event) {
-        this.setState({paid: event.target.value});
+        if (event) {
+            this.setState({paid: event.value});
+        }
     }
 
     async editStudent(student) {
@@ -75,6 +80,8 @@ class AddRentalRecordModal extends React.Component {
     render() {
         const { selectedBook, selectedStudent, paid } = this.state;
         const { open, studentList, bookList } = this.props;
+        const studentOptions = studentList.map(item => { return { value: item._id, label: `${item.first_name} ${item.last_name}` }});
+        const bookOptions = bookList.map(item => { return { value: item._id, label: item.name }});
         return (
             <Dialog
                 open={open}
@@ -109,15 +116,10 @@ class AddRentalRecordModal extends React.Component {
                         fullWidth
                         label="Student"
                         onChange={(e) => this.handleStudentChange(e)}
-                    >
-                        {studentList.map((student) => {
-                            return (
-                                <MenuItem value={student._id}>
-                                    <em>{student.first_name} {student.last_name}</em>
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
+                        options={studentOptions}
+                        isClearable
+                        required
+                    />
                     <br />
                     <InputLabel id="book-label">Select A Book</InputLabel>
                     <Select
@@ -126,15 +128,10 @@ class AddRentalRecordModal extends React.Component {
                         fullWidth
                         label="Book"
                         onChange={(e) => this.handleBookChange(e)}
-                    >
-                        {bookList.map((book) => {
-                            return (
-                                <MenuItem value={book._id}>
-                                    <em>{book.name}</em>
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
+                        options={bookOptions}
+                        isClearable
+                        required
+                    />
                     <br />
                     <label htmlFor="rental_date">Rental Date</label>
                     <TextField
@@ -154,14 +151,19 @@ class AddRentalRecordModal extends React.Component {
                         fullWidth
                         label="Paid"
                         onChange={(e) => this.handlePaidChange(e)}
-                    >
-                        <MenuItem value={true}>
-                            <em>Yes</em>
-                        </MenuItem>
-                        <MenuItem value={false}>
-                            <em>No</em>
-                        </MenuItem>
-                    </Select>
+                        options={[
+                            {
+                                label: 'Yes',
+                                value: true,
+                            },
+                            {
+                                label: 'No',
+                                value: false,
+                            }
+                        ]}
+                        isClearable
+                        required
+                    />
                     <br />
                     <label htmlFor="payment_due">Payment Due</label>
                     <TextField
