@@ -4,8 +4,8 @@ import Book from './book.js';
 const { Schema, model } = mongoose;
 
 const rentalRecordSchema = new Schema({
-    student: { type: {Student}, required: true },
-    book: { type: {Book}, required: true },
+    student: { type: [Student.Schema], required: true },
+    book: { type: [Book.Schema], required: true },
     rental_date: { type: Date, required: true },
     paid: { type: Boolean, requied: true },
     payment_due: { type: Number, required: true },

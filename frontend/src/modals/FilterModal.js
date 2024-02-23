@@ -19,20 +19,15 @@ class FilterModal extends React.Component {
             selectedDate: '',
         };
 
-        this.closeModal = this.closeModal.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
-    }
-
-    closeModal() {
-        const { handleClose } = this.props;
-        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null, selectedDate: '' });
-        handleClose();
     }
 
     handleStudentChange(event) {
         const { studentList } = this.props;
         if (event) {
             this.setState({selectedStudent: studentList.filter((student) => student._id === event.value)[0]});
+        } else {
+            this.setState({selectedStudent: {}});
         }
     }
 
@@ -40,12 +35,16 @@ class FilterModal extends React.Component {
         const { bookList } = this.props;
         if (event) {
             this.setState({selectedBook: bookList.filter((book) => book._id === event.value)[0]});
+        } else {
+            this.setState({selectedBook: {}});
         }
     }
     
     handlePaidChange(event) {
         if (event) {
             this.setState({paid: event.value});
+        } else {
+            this.setState({paid: {}});
         }
     }
 
@@ -61,7 +60,7 @@ class FilterModal extends React.Component {
         return (
             <Dialog
                 open={open}
-                onClose={this.closeModal}
+                onClose={handleClose}
                 PaperProps={{
                 component: 'form',
                 style:{width: '-webkit-fill-available'},
@@ -98,6 +97,7 @@ class FilterModal extends React.Component {
                         onChange={(e) => this.handleStudentChange(e)}
                         options={studentOptions}
                         isClearable
+                        value={Object.keys(selectedStudent).length === 0 ? '' : { label: `${selectedStudent.first_name} ${selectedStudent.last_name}`, value: selectedStudent._id }}
                     />
                     <br />
                     <br />
@@ -123,6 +123,8 @@ class FilterModal extends React.Component {
                         label="Book"
                         onChange={(e) => this.handleBookChange(e)}
                         options={bookOptions}
+                        isClearable
+                        value={Object.keys(selectedBook).length === 0 ? '' : { label: selectedBook.name, value: selectedBook._id }}
                     />
                     <br />
                     <br />
@@ -149,7 +151,7 @@ class FilterModal extends React.Component {
                 <DialogActions>
                     <Button onClick={async () => {
                         await setFilterConditions([]);
-                        this.closeModal();
+                        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null, selectedDate: '' });
                     }}>Clear</Button>
                     <Button type="submit">Set Filter</Button>
                 </DialogActions>
