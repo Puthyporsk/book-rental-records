@@ -22,30 +22,40 @@ class App extends React.Component {
       openFilter: false,
     };
 
+    this.getAllStudents = this.getAllStudents.bind(this);
+    this.getAllBooks = this.getAllBooks.bind(this);
   }
 
   async getAllStudents() {
-    const response = await fetch(
-      "http://localhost:5000/api/student/getAll"
-    );
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(responseData.message);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/student/getAll"
+      );
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
+      this.setState({ isLoaded: true, students: responseData.students.sort((a, b) => a.first_name > b.first_name ? 1 : -1) });
+    } catch (err) {
+      console.error(err);
     }
-    this.setState({ students: responseData.students.sort((a, b) => a.first_name > b.first_name ? 1 : -1) });
   };
 
   async getAllBooks() {
-    const response = await fetch(
-      "http://localhost:5000/api/book/getAll"
-    );
-    const responseData = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(responseData.message);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/book/getAll"
+      );
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
+      this.setState({ books: responseData.books.sort((a, b) => a.name > b.name ? 1 : -1) });
+    } catch (err) {
+      console.error(err);
     }
-    this.setState({ books: responseData.books.sort((a, b) => a.name > b.name ? 1 : -1) });
   };
 
   async getAllRentalRecord() {

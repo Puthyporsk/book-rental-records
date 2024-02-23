@@ -5,9 +5,8 @@ import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Select from '@mui/material/Select';
+import Select from 'react-select';
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import { PropTypes } from "prop-types";
 
 class FilterModal extends React.Component {
@@ -32,16 +31,22 @@ class FilterModal extends React.Component {
 
     handleStudentChange(event) {
         const { studentList } = this.props;
-        this.setState({selectedStudent: studentList.filter((student) => student._id === event.target.value)[0]});
+        if (event) {
+            this.setState({selectedStudent: studentList.filter((student) => student._id === event.value)[0]});
+        }
     }
 
     handleBookChange(event) {
         const { bookList } = this.props;
-        this.setState({selectedBook: bookList.filter((book) => book._id === event.target.value)[0]});
+        if (event) {
+            this.setState({selectedBook: bookList.filter((book) => book._id === event.value)[0]});
+        }
     }
-
+    
     handlePaidChange(event) {
-        this.setState({paid: event.target.value});
+        if (event) {
+            this.setState({paid: event.value});
+        }
     }
 
     handleDateChange(event) {
@@ -51,12 +56,15 @@ class FilterModal extends React.Component {
     render() {
         const { selectedBook, selectedStudent, paid, selectedDate } = this.state;
         const { open, handleClose, studentList, bookList, setFilterConditions } = this.props;
+        const studentOptions = studentList.map(item => { return { value: item._id, label: `${item.first_name} ${item.last_name}` }});
+        const bookOptions = bookList.map(item => { return { value: item._id, label: item.name }});
         return (
             <Dialog
                 open={open}
                 onClose={this.closeModal}
                 PaperProps={{
                 component: 'form',
+                style:{width: '-webkit-fill-available'},
                 onSubmit: async (event) => {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
@@ -88,16 +96,9 @@ class FilterModal extends React.Component {
                         fullWidth
                         label="Student"
                         onChange={(e) => this.handleStudentChange(e)}
-                        value={selectedStudent._id}
-                    >
-                        {studentList.map((student) => {
-                            return (
-                                <MenuItem value={student._id}>
-                                    <em>{student.first_name} {student.last_name}</em>
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
+                        options={studentOptions}
+                        isClearable
+                    />
                     <br />
                     <br />
                     <label htmlFor="rental_date">Rental Date</label>
@@ -121,16 +122,8 @@ class FilterModal extends React.Component {
                         fullWidth
                         label="Book"
                         onChange={(e) => this.handleBookChange(e)}
-                        value={selectedBook._id}
-                    >
-                        {bookList.map((book) => {
-                            return (
-                                <MenuItem value={book._id}>
-                                    <em>{book.name}</em>
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
+                        options={bookOptions}
+                    />
                     <br />
                     <br />
                     <InputLabel id="paid-label">Paid</InputLabel>
@@ -140,22 +133,25 @@ class FilterModal extends React.Component {
                         fullWidth
                         label="Paid"
                         onChange={(e) => this.handlePaidChange(e)}
-                        value={paid}
-                    >
-                        <MenuItem value={true}>
-                            <em>Yes</em>
-                        </MenuItem>
-                        <MenuItem value={false}>
-                            <em>No</em>
-                        </MenuItem>
-                    </Select>
+                        options={[
+                            {
+                                label: 'Yes',
+                                value: true,
+                            },
+                            {
+                                label: 'No',
+                                value: false,
+                            }
+                        ]}
+                        isClearable
+                    />
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={async () => {
-                    await setFilterConditions([]);
-                    this.closeModal();
-                }}>Clear</Button>
-                <Button type="submit">Set Filter</Button>
+                    <Button onClick={async () => {
+                        await setFilterConditions([]);
+                        this.closeModal();
+                    }}>Clear</Button>
+                    <Button type="submit">Set Filter</Button>
                 </DialogActions>
             </Dialog>
         );
