@@ -22,34 +22,42 @@ class FilterModal extends React.Component {
         this.handleDateChange = this.handleDateChange.bind(this);
     }
 
-    handleStudentChange(event) {
-        const { studentList } = this.props;
+    async handleStudentChange(event) {
+        const { studentList, filterConditions, setFilterConditions } = this.props;
         if (event) {
             this.setState({selectedStudent: studentList.filter((student) => student._id === event.value)[0]});
         } else {
             this.setState({selectedStudent: {}});
+            await setFilterConditions(filterConditions.filter(cond => !cond.selectedStudent));
         }
     }
 
-    handleBookChange(event) {
-        const { bookList } = this.props;
+    async handleBookChange(event) {
+        const { bookList, filterConditions, setFilterConditions } = this.props;
         if (event) {
             this.setState({selectedBook: bookList.filter((book) => book._id === event.value)[0]});
         } else {
             this.setState({selectedBook: {}});
+            await setFilterConditions(filterConditions.filter(cond => !cond.selectedBook));
         }
     }
     
-    handlePaidChange(event) {
+    async handlePaidChange(event) {
+        const { filterConditions, setFilterConditions } = this.props;
         if (event) {
             this.setState({paid: event.value});
         } else {
-            this.setState({paid: {}});
+            this.setState({paid: null});
+            await setFilterConditions(filterConditions.filter(cond => cond.paid === undefined));
         }
     }
 
-    handleDateChange(event) {
+    async handleDateChange(event) {
+        const { filterConditions, setFilterConditions } = this.props;
         this.setState({ selectedDate: event.target.value });
+        if (event.target.value === '') {
+            await setFilterConditions(filterConditions.filter(cond => !cond.rental_date));
+        }
     }
 
     render() {
@@ -146,6 +154,10 @@ class FilterModal extends React.Component {
                             }
                         ]}
                         isClearable
+                        value={paid === null ? null : {
+                            label: paid ? 'Yes' : 'No',
+                            value: paid
+                        }}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -167,6 +179,7 @@ FilterModal.propTypes = {
     studentList: PropTypes.array,
     bookList: PropTypes.array,
     setFilterConditions: PropTypes.func,
+    filterConditions: PropTypes.array,
 }
 
 export default FilterModal;
