@@ -7,6 +7,8 @@ import AddBookModal from './modals/AddBookModal';
 import AddRentalRecordModal from './modals/AddRentalRecordModal';
 import FilterModal from './modals/FilterModal';
 
+const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -24,12 +26,13 @@ class App extends React.Component {
 
     this.getAllStudents = this.getAllStudents.bind(this);
     this.getAllBooks = this.getAllBooks.bind(this);
+
   }
 
   async getAllStudents() {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/student/getAll"
+        `${base_url}/api/student/getAll`
       );
       const responseData = await response.json();
   
@@ -45,7 +48,7 @@ class App extends React.Component {
   async getAllBooks() {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/book/getAll"
+        `${base_url}/api/book/getAll`
       );
       const responseData = await response.json();
       
@@ -62,7 +65,7 @@ class App extends React.Component {
     this.setState({ isLoaded: false });
     try {
       const response = await fetch(
-        "http://localhost:5000/api/rentalRecord/getAll"
+        `${base_url}/api/rentalRecord/getAll`
       );
       const responseData = await response.json();
   

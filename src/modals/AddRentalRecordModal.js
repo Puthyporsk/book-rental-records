@@ -9,6 +9,8 @@ import Select from 'react-select';
 import InputLabel from '@mui/material/InputLabel';
 import { PropTypes } from "prop-types";
 
+const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
+
 class AddRentalRecordModal extends React.Component {
     constructor(props) {
         super(props);
@@ -49,7 +51,7 @@ class AddRentalRecordModal extends React.Component {
 
     async editStudent(student) {
         const response = await fetch(
-          "http://localhost:5000/api/student/edit", {
+          `${base_url}/api/student/edit`, {
             method: "PUT",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(student),
@@ -64,7 +66,7 @@ class AddRentalRecordModal extends React.Component {
 
     async createRentalRecord(body) {
         const response = await fetch(
-          "http://localhost:5000/api/rentalRecord/create", {
+          `${base_url}/api/rentalRecord/create`, {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body),

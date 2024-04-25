@@ -7,6 +7,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { PropTypes } from "prop-types";
 
+const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
+
 class AddStudentModal extends React.Component {
     constructor(props) {
         super(props);
@@ -15,7 +17,7 @@ class AddStudentModal extends React.Component {
 
     async createStudent(body) {
         const response = await fetch(
-        "http://localhost:5000/api/student/create", {
+        `${base_url}/api/student/create`, {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body),
