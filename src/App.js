@@ -118,7 +118,7 @@ class App extends React.Component {
               setOpenFilter={(value) => this.setState({ openFilter: value })}
               filterConditions={filterConditions}
             />
-          ) : (<></>)}
+          ) : (<>Loading...</>)}
           <AddStudentModal
             open={openStudent}
             handleClose={() => this.setState({ openStudent: false })}
