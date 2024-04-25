@@ -30,6 +30,7 @@ class App extends React.Component {
   }
 
   async getAllStudents() {
+    this.setState({ isLoaded: false });
     try {
       const response = await fetch(
         `${base_url}/api/student/getAll`
@@ -46,6 +47,7 @@ class App extends React.Component {
   };
 
   async getAllBooks() {
+    this.setState({ isLoaded: false });
     try {
       const response = await fetch(
         `${base_url}/api/book/getAll`
@@ -55,7 +57,7 @@ class App extends React.Component {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-      this.setState({ books: responseData.books.sort((a, b) => a.name > b.name ? 1 : -1) });
+      this.setState({ isLoaded: true, books: responseData.books.sort((a, b) => a.name > b.name ? 1 : -1) });
     } catch (err) {
       console.error(err);
     }
