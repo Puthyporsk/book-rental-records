@@ -30,7 +30,6 @@ class App extends React.Component {
   }
 
   async getAllStudents() {
-    this.setState({ isLoaded: false });
     try {
       const response = await fetch(
         `${base_url}/api/student/getAll`
@@ -40,14 +39,13 @@ class App extends React.Component {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-      this.setState({ isLoaded: true, students: responseData.students.sort((a, b) => a.first_name > b.first_name ? 1 : -1) });
+      this.setState({ students: responseData.students.sort((a, b) => a.first_name > b.first_name ? 1 : -1) });
     } catch (err) {
       console.error(err);
     }
   };
 
   async getAllBooks() {
-    this.setState({ isLoaded: false });
     try {
       const response = await fetch(
         `${base_url}/api/book/getAll`
@@ -57,14 +55,13 @@ class App extends React.Component {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-      this.setState({ isLoaded: true, books: responseData.books.sort((a, b) => a.name > b.name ? 1 : -1) });
+      this.setState({ books: responseData.books.sort((a, b) => a.name > b.name ? 1 : -1) });
     } catch (err) {
       console.error(err);
     }
   };
 
   async getAllRentalRecord() {
-    this.setState({ isLoaded: false });
     try {
       const response = await fetch(
         `${base_url}/api/rentalRecord/getAll`
@@ -74,16 +71,18 @@ class App extends React.Component {
       if (!response.ok) {
         throw new Error(responseData.message);
       }
-      this.setState({ rentalRecords: responseData.rentalRecords.sort((a, b) => a.student.first_name > b.student.first_name ? 1 : -1), isLoaded: true });
+      this.setState({ rentalRecords: responseData.rentalRecords.sort((a, b) => a.student.first_name > b.student.first_name ? 1 : -1) });
     } catch (err) {
       console.error(err);
     }
   };
 
-  componentDidMount() {
-    this.getAllStudents();
-    this.getAllBooks();
-    this.getAllRentalRecord();
+  async componentDidMount() {
+    this.setState({ isLoaded: false });
+    await this.getAllStudents();
+    await this.getAllBooks();
+    await this.getAllRentalRecord();
+    this.setState({ isLoaded: true });
   }
 
   render() {
