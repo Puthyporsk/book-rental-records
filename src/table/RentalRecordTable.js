@@ -85,7 +85,7 @@ class RentalRecordTable extends React.Component {
                     tmpArray = tmpArray.filter((record) => record.paid === filter.paid);
                 }
                 if (filter.rental_date) {
-                    tmpArray = tmpArray.filter((record) => moment(record.rental_date).format("DD/MMM/YYY") === moment(filter.rental_date).format("DD/MMM/YYY"));
+                    tmpArray = tmpArray.filter((record) => moment(record.rental_date).format("MMM/YYY") === moment(filter.rental_date).format("MMM/YYY"));
                 }
                 this.setState({ records: tmpArray });
             })
