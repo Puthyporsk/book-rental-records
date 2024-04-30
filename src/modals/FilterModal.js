@@ -115,7 +115,7 @@ class FilterModal extends React.Component {
                         margin="dense"
                         id="rental_date"
                         name="rental_date"
-                        type="date"
+                        type="month"
                         fullWidth
                         variant="standard"
                         onChange={this.handleDateChange}
