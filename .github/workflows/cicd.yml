@@ -31,5 +31,5 @@ jobs:
             - name: Run Docker Container
               run: docker run -d -p 3000:80 --name reactjs-app-container puthyporsk0108/book-rental-record-frontend
             - name: Delete old image
-              run: docker system prune
+              run: docker system prune -f
             
