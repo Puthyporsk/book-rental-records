@@ -85,7 +85,7 @@ class RentalRecordTable extends React.Component {
                     tmpArray = tmpArray.filter((record) => record.paid === filter.paid);
                 }
                 if (filter.rental_date) {
-                    tmpArray = tmpArray.filter((record) => moment(record.rental_date).format("MMM/YYY") === moment(filter.rental_date).format("MMM/YYY"));
+                    tmpArray = tmpArray.filter((record) => moment(record.rental_date).utc().format("MMM/YYY") === moment(filter.rental_date).utc().format("MMM/YYY"));
                 }
                 this.setState({ records: tmpArray });
             })
@@ -150,7 +150,7 @@ class RentalRecordTable extends React.Component {
                                             <TableCell component="th" scope="row">
                                                 {record.student.first_name} {record.student.last_name}
                                             </TableCell>
-                                            <TableCell align="right">{moment(record.rental_date).format("DD/MMM/YY")}</TableCell>
+                                            <TableCell align="right">{moment(record.rental_date).utc().format("DD/MMM/YY")}</TableCell>
                                             <TableCell align="right">{record.book.name}</TableCell>
                                             <TableCell align="right">{record.paid ? 'PAID' : 'UNPAID'}</TableCell>
                                             <TableCell align="right">${record.payment_due}</TableCell>
