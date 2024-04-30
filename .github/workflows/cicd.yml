@@ -26,6 +26,8 @@ jobs:
               run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             - name: Pull image from docker hub
               run: docker pull puthyporsk0108/book-rental-record-frontend:latest
+            - name: Delete old image
+              run: docker system prune
             - name: Delete old container
               run: docker rm -f reactjs-app-container
             - name: Run Docker Container
