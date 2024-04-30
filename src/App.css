@@ -40,14 +40,12 @@
 }
 
 .records-table {
-  height: 100vh;
   margin: 35px 35px 0px 35px;
   padding-bottom: 35px;
 }
 
 .table-container {
   background-color: bisque;
-  height: 100vh;
   border-radius: 0.3rem;
 }
 
