@@ -111,7 +111,7 @@ class App extends React.Component {
             <button className='modal-button' onClick={() => this.setState({ openRentalRecord: true })}>Add Rental Record</button>
           </div>
         </header>
-        <body style={{ backgroundColor: '#212529' }}>
+        <body style={{ minHeight: '90vh', overflow: 'auto', backgroundColor: '#212529' }}>
           { isLoaded ? (
             <RentalRecordTable
               rentalRecords={rentalRecords}

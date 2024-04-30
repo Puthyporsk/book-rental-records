@@ -8,11 +8,17 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TableFooter,
+    TablePagination,
     Paper,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import moment from "moment";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FirstPageRoundedIcon from '@mui/icons-material/FirstPageRounded';
+import LastPageRoundedIcon from '@mui/icons-material/LastPageRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 
 class RentalRecordTable extends React.Component {
     constructor(props) {
@@ -21,11 +27,23 @@ class RentalRecordTable extends React.Component {
             immutableRecords: [],
             records: [],
             searchWord: '',
+            page: 0,
+            rowsPerPage: 10,
         }
 
         this.handleSearchChange = this.handleSearchChange.bind(this);
+        this.handleChangePage = this.handleChangePage.bind(this);
+        this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
         this.debounce = this.debounce.bind(this);
     }
+
+    handleChangePage(event, newPage) {
+        this.setState({ page: newPage });
+    };
+
+    handleChangeRowsPerPage(event) {
+        this.setState({ rowsPerPage: parseInt(event.target.value, 10), page: 0 });
+      };
 
     debounce(fn, delay = 1000) { 
         let timerId = null; 
@@ -51,8 +69,8 @@ class RentalRecordTable extends React.Component {
         this.setState({ immutableRecords: rentalRecords, records: rentalRecords });
     }
 
-    componentWillReceiveProps() {
-        const { rentalRecords, filterConditions } = this.props;
+    componentWillReceiveProps(newProps) {
+        const { rentalRecords, filterConditions } = newProps;
         this.setState({ immutableRecords: rentalRecords, records: rentalRecords });
         let tmpArray = [...rentalRecords];
         if (filterConditions.length !== 0) {
@@ -76,7 +94,12 @@ class RentalRecordTable extends React.Component {
 
     render() {
         const { isLoaded, setOpenFilter, filterConditions } = this.props;
-        const { records, searchWord } = this.state;
+        const {
+            records,
+            searchWord,
+            rowsPerPage,
+            page,
+        } = this.state;
         return (
             <Fragment>
                 <div className='search-bar'>
@@ -101,7 +124,7 @@ class RentalRecordTable extends React.Component {
                 </div>
                 <div className='records-table'>
                     <TableContainer className="table-container" component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
                         <TableRow>
                             <TableCell>Student's Name</TableCell>
@@ -114,23 +137,55 @@ class RentalRecordTable extends React.Component {
                         </TableHead>
                         <TableBody>
                             { isLoaded ? (
-                                records.map((record) => (
-                                    <TableRow
-                                        key={record._id}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell component="th" scope="row">
-                                            {record.student.first_name} {record.student.last_name}
-                                        </TableCell>
-                                        <TableCell align="right">{moment(record.rental_date).format("DD/MMM/YY")}</TableCell>
-                                        <TableCell align="right">{record.book.name}</TableCell>
-                                        <TableCell align="right">{record.paid ? 'PAID' : 'UNPAID'}</TableCell>
-                                        <TableCell align="right">${record.payment_due}</TableCell>
-                                        <TableCell align="right">{record.comment}</TableCell>
-                                    </TableRow>
-                                ))
+                                (rowsPerPage > 0
+                                    ? records.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : records).map((record, index) => (
+                                        <TableRow
+                                            key={record._id}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            style={{
+                                                backgroundColor: index % 2 === 0 ? '#D3D3D3' : '#FFFAFA'
+                                            }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {record.student.first_name} {record.student.last_name}
+                                            </TableCell>
+                                            <TableCell align="right">{moment(record.rental_date).format("DD/MMM/YY")}</TableCell>
+                                            <TableCell align="right">{record.book.name}</TableCell>
+                                            <TableCell align="right">{record.paid ? 'PAID' : 'UNPAID'}</TableCell>
+                                            <TableCell align="right">${record.payment_due}</TableCell>
+                                            <TableCell align="right">{record.comment}</TableCell>
+                                        </TableRow>
+                                    ))
                             ) : (<>Loading...</>)}
                         </TableBody>
+                        <TableFooter>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 15, { label: 'All', value: -1 }]}
+                                colSpan={6}
+                                count={records.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                slotProps={{
+                                    select: {
+                                      'aria-label': 'rows per page',
+                                      'value' : rowsPerPage,
+                                    },
+                                    actions: {
+                                      showFirstButton: true,
+                                      showLastButton: true,
+                                      slots: {
+                                        firstPageIcon: FirstPageRoundedIcon,
+                                        lastPageIcon: LastPageRoundedIcon,
+                                        nextPageIcon: ChevronRightRoundedIcon,
+                                        backPageIcon: ChevronLeftRoundedIcon,
+                                      },
+                                    },
+                                  }}
+                                onPageChange={this.handleChangePage}
+                                onRowsPerPageChange={this.handleChangeRowsPerPage}
+                            />
+                        </TableFooter>
                     </Table>
                     </TableContainer>
                 </div>
