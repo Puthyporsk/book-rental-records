@@ -108,7 +108,7 @@ class App extends React.Component {
           <div>
             <button className='modal-button' onClick={() => this.setState({ openStudent: true })}>Add Student</button>
             <button className='modal-button' onClick={() => this.setState({ openBook: true })}>Add Book</button>
-            <button className='modal-button' onClick={() => this.setState({ openRentalRecord: true })}>Add Rental Record</button>
+            <button className='modal-button' onClick={() => this.setState({ openRentalRecord: true })}>Add Purchase Record</button>
           </div>
         </header>
         <body style={{ minHeight: '90vh', overflow: 'auto', backgroundColor: '#212529' }}>

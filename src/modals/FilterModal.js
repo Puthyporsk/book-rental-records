@@ -94,7 +94,7 @@ class FilterModal extends React.Component {
                 },
                 }}
             >
-                <DialogTitle>Filter Rental Records</DialogTitle>
+                <DialogTitle>Filter Purchase Records</DialogTitle>
                 <DialogContent>
                 <InputLabel id="student-label">Select A Student</InputLabel>
                     <Select
@@ -109,7 +109,7 @@ class FilterModal extends React.Component {
                     />
                     <br />
                     <br />
-                    <label htmlFor="rental_date">Rental Date</label>
+                    <label htmlFor="rental_date">Purchase Date</label>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -159,6 +159,8 @@ class FilterModal extends React.Component {
                             value: paid
                         }}
                     />
+                    <br />
+                    <br />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={async () => {

@@ -17,7 +17,6 @@ class AddRentalRecordModal extends React.Component {
         this.state = {
             selectedStudent: {},
             selectedBook: {},
-            paid: null,
         };
 
         this.closeModal = this.closeModal.bind(this);
@@ -25,7 +24,7 @@ class AddRentalRecordModal extends React.Component {
 
     closeModal() {
         const { handleClose } = this.props;
-        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null });
+        this.setState({ selectedBook: {}, selectedStudent: {} });
         handleClose();
     }
 
@@ -43,12 +42,6 @@ class AddRentalRecordModal extends React.Component {
         }
     }
     
-    handlePaidChange(event) {
-        if (event) {
-            this.setState({paid: event.value});
-        }
-    }
-
     async editStudent(student) {
         const response = await fetch(
           `${base_url}/api/student/edit`, {
@@ -80,7 +73,7 @@ class AddRentalRecordModal extends React.Component {
     }
 
     render() {
-        const { selectedBook, selectedStudent, paid } = this.state;
+        const { selectedBook, selectedStudent } = this.state;
         const { open, studentList, bookList } = this.props;
         const studentOptions = studentList.map(item => { return { value: item._id, label: `${item.first_name} ${item.last_name}` }});
         const bookOptions = bookList.map(item => { return { value: item._id, label: item.name }});
@@ -98,9 +91,9 @@ class AddRentalRecordModal extends React.Component {
                         student: selectedStudent,
                         book: selectedBook,
                         rental_date: recordJson.rental_date,
-                        paid: paid,
-                        payment_due: paid ? 0 : selectedBook.price,
+                        payment_due: selectedBook.price,
                         comment: recordJson.comment,
+                        paid: false,
                     };
                     await this.createRentalRecord(body);
                     selectedStudent.book_rental.push(selectedBook);
@@ -109,7 +102,7 @@ class AddRentalRecordModal extends React.Component {
                 },
                 }}
             >
-                <DialogTitle>Book Rental Record</DialogTitle>
+                <DialogTitle>Book Purchase Record</DialogTitle>
                 <DialogContent>
                     <InputLabel id="student-label">Select A Student</InputLabel>
                     <Select
@@ -135,7 +128,7 @@ class AddRentalRecordModal extends React.Component {
                         required
                     />
                     <br />
-                    <label htmlFor="rental_date">Rental Date</label>
+                    <label htmlFor="rental_date">Purchase Date</label>
                     <TextField
                         autoFocus
                         required
@@ -146,30 +139,10 @@ class AddRentalRecordModal extends React.Component {
                         fullWidth
                         variant="standard"
                     />
-                    <InputLabel id="paid-label">Paid</InputLabel>
-                    <Select
-                        labelId="paid-label"
-                        id="paid"
-                        fullWidth
-                        label="Paid"
-                        onChange={(e) => this.handlePaidChange(e)}
-                        options={[
-                            {
-                                label: 'Yes',
-                                value: true,
-                            },
-                            {
-                                label: 'No',
-                                value: false,
-                            }
-                        ]}
-                        isClearable
-                        required
-                    />
                     <br />
                     <label htmlFor="payment_due">Payment Due</label>
                     <TextField
-                        disabled={paid}
+                        disabled
                         autoFocus
                         required
                         margin="dense"
@@ -177,7 +150,7 @@ class AddRentalRecordModal extends React.Component {
                         name="payment_due"
                         fullWidth
                         variant="standard"
-                        value={!paid && selectedBook.price ? `$${selectedBook.price}` : ''}
+                        value={selectedBook.price ? `$${selectedBook.price}` : ''}
                     />
                     <label htmlFor="comment">Comment</label>
                     <TextField
@@ -193,7 +166,7 @@ class AddRentalRecordModal extends React.Component {
                 </DialogContent>
                 <DialogActions>
                 <Button onClick={this.closeModal}>Cancel</Button>
-                <Button type="submit">Add Rental Record</Button>
+                <Button type="submit">Add Purchase Record</Button>
                 </DialogActions>
             </Dialog>
         );

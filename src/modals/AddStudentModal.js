@@ -26,7 +26,7 @@ class AddStudentModal extends React.Component {
         const responseData = await response.json();
     
         if (!response.ok) {
-        throw new Error(responseData.message);
+            alert(responseData.message);
         }
     }
     render() {
@@ -44,7 +44,7 @@ class AddStudentModal extends React.Component {
                     const body = {
                         first_name: studentJson.first_name,
                         last_name: studentJson.last_name,
-                        age:  studentJson.age,
+                        grade:  studentJson.grade,
                         book_rental: [],
                     };
                     await this.createStudent(body);
@@ -79,17 +79,17 @@ class AddStudentModal extends React.Component {
                         fullWidth
                         variant="standard"
                     />
-                    <label htmlFor="age">Age</label>
+                    <label htmlFor="grade">Grade</label>
                     <TextField
                         autoFocus
-                        required
                         margin="dense"
-                        id="age"
-                        name="age"
-                        label="age"
+                        id="grade"
+                        name="grade"
+                        label="Grade"
                         type="number"
                         fullWidth
                         variant="standard"
+                        InputProps={{ inputProps: { min: 0 } }}
                     />
                 </DialogContent>
                 <DialogActions>
