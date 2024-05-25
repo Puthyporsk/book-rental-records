@@ -11,6 +11,7 @@ import {
     TableFooter,
     TablePagination,
     Paper,
+    Checkbox,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import moment from "moment";
@@ -19,6 +20,8 @@ import FirstPageRoundedIcon from '@mui/icons-material/FirstPageRounded';
 import LastPageRoundedIcon from '@mui/icons-material/LastPageRounded';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+
+const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
 
 class RentalRecordTable extends React.Component {
     constructor(props) {
@@ -32,6 +35,7 @@ class RentalRecordTable extends React.Component {
         }
 
         this.handleSearchChange = this.handleSearchChange.bind(this);
+        this.handlePaidCheckboxClicked = this.handlePaidCheckboxClicked.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
         this.debounce = this.debounce.bind(this);
@@ -51,7 +55,35 @@ class RentalRecordTable extends React.Component {
             clearTimeout(timerId); 
             timerId = setTimeout(() => fn(...args), delay); 
         }; 
-    }; 
+    };
+    
+    async handlePaidCheckboxClicked(e, rec) {
+        const { records } = this.state;
+        try {
+            const response = await fetch(
+              `${base_url}/api/rentalRecord/edit`,
+              {
+                method: "PUT",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    _id: rec._id,
+                    paid: e.target.checked,
+                }),
+              }
+            );
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+              throw new Error(responseData.message);
+            }
+            
+            records[records.findIndex((r) => r._id === rec._id)].paid = responseData.rentalRecords.paid
+            this.setState({ records: records });
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     handleSearchChange(value) {
         const { immutableRecords } = this.state;
@@ -130,9 +162,9 @@ class RentalRecordTable extends React.Component {
                             <TableCell>Student's Name</TableCell>
                             <TableCell align="right">Rental Date</TableCell>
                             <TableCell align="right">Book Name</TableCell>
-                            <TableCell align="right">Paid</TableCell>
                             <TableCell align="right">Payment Due</TableCell>
                             <TableCell align="right">Comment</TableCell>
+                            <TableCell align="right">Paid</TableCell>
                         </TableRow>
                         </TableHead>
                         <TableBody>
@@ -152,9 +184,14 @@ class RentalRecordTable extends React.Component {
                                             </TableCell>
                                             <TableCell align="right">{moment(record.rental_date).utc().format("DD/MMM/YY")}</TableCell>
                                             <TableCell align="right">{record.book.name}</TableCell>
-                                            <TableCell align="right">{record.paid ? 'PAID' : 'UNPAID'}</TableCell>
                                             <TableCell align="right">${record.payment_due}</TableCell>
                                             <TableCell align="right">{record.comment}</TableCell>
+                                            <TableCell align="right">
+                                                <Checkbox
+                                                    onClick={(e) => this.handlePaidCheckboxClicked(e, record)}
+                                                    checked={record.paid}
+                                                />
+                                            </TableCell>
                                         </TableRow>
                                     ))
                             ) : (<>Loading...</>)}

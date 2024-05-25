@@ -44,7 +44,6 @@ class AddBookModal extends React.Component {
                     const bookJson = Object.fromEntries(formData.entries());
                     const body = {
                         name: bookJson.name,
-                        description:  bookJson.description,
                         price:  bookJson.price,
                       };
                     await this.createBook(body);
@@ -67,18 +66,6 @@ class AddBookModal extends React.Component {
                         fullWidth
                         variant="standard"
                     />
-                    <label htmlFor="description">Description</label>
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="description"
-                        name="description"
-                        label="Description Name"
-                        type="string"
-                        fullWidth
-                        variant="standard"
-                    />
                     <label htmlFor="price">Price</label>
                     <TextField
                         autoFocus
@@ -88,6 +75,10 @@ class AddBookModal extends React.Component {
                         name="price"
                         label="Price"
                         type="number"
+                        inputProps={{
+                            step: 0.01,
+                            min: 0.00,
+                          }}
                         fullWidth
                         variant="standard"
                     />
