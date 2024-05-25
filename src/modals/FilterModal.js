@@ -14,7 +14,6 @@ class FilterModal extends React.Component {
         super(props);
         this.state = {
             selectedStudent: {},
-            selectedBook: {},
             paid: null,
             selectedDate: '',
         };
@@ -32,16 +31,6 @@ class FilterModal extends React.Component {
         }
     }
 
-    async handleBookChange(event) {
-        const { bookList, filterConditions, setFilterConditions } = this.props;
-        if (event) {
-            this.setState({selectedBook: bookList.filter((book) => book._id === event.value)[0]});
-        } else {
-            this.setState({selectedBook: {}});
-            await setFilterConditions(filterConditions.filter(cond => !cond.selectedBook));
-        }
-    }
-    
     async handlePaidChange(event) {
         const { filterConditions, setFilterConditions } = this.props;
         if (event) {
@@ -61,10 +50,9 @@ class FilterModal extends React.Component {
     }
 
     render() {
-        const { selectedBook, selectedStudent, paid, selectedDate } = this.state;
-        const { open, handleClose, studentList, bookList, setFilterConditions } = this.props;
+        const { selectedStudent, paid, selectedDate } = this.state;
+        const { open, handleClose, studentList, setFilterConditions } = this.props;
         const studentOptions = studentList.map(item => { return { value: item._id, label: `${item.first_name} ${item.last_name}` }});
-        const bookOptions = bookList.map(item => { return { value: item._id, label: item.name }});
         return (
             <Dialog
                 open={open}
@@ -77,9 +65,6 @@ class FilterModal extends React.Component {
                     const formData = new FormData(event.currentTarget);
                     const recordJson = Object.fromEntries(formData.entries());
                     let filterArray = [];
-                    if (Object.keys(selectedBook).length !== 0) {
-                        filterArray.push({selectedBook: selectedBook});
-                    }
                     if (Object.keys(selectedStudent).length !== 0) {
                         filterArray.push({selectedStudent: selectedStudent});
                     }
@@ -94,9 +79,9 @@ class FilterModal extends React.Component {
                 },
                 }}
             >
-                <DialogTitle>Filter Rental Records</DialogTitle>
+                <DialogTitle>Filter Purchase Records</DialogTitle>
                 <DialogContent>
-                <InputLabel id="student-label">Select A Student</InputLabel>
+                <InputLabel id="student-label">Filter by Student</InputLabel>
                     <Select
                         labelId="student-label"
                         id="student"
@@ -109,7 +94,7 @@ class FilterModal extends React.Component {
                     />
                     <br />
                     <br />
-                    <label htmlFor="rental_date">Rental Date</label>
+                    <label htmlFor="rental_date">Filter by Purchase Date</label>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -123,20 +108,7 @@ class FilterModal extends React.Component {
                     />
                     <br />
                     <br />
-                    <InputLabel id="book-label">Select A Book</InputLabel>
-                    <Select
-                        labelId="book-label"
-                        id="book"
-                        fullWidth
-                        label="Book"
-                        onChange={(e) => this.handleBookChange(e)}
-                        options={bookOptions}
-                        isClearable
-                        value={Object.keys(selectedBook).length === 0 ? '' : { label: selectedBook.name, value: selectedBook._id }}
-                    />
-                    <br />
-                    <br />
-                    <InputLabel id="paid-label">Paid</InputLabel>
+                    <InputLabel id="paid-label">Filter by Payment Status</InputLabel>
                     <Select
                         labelId="paid-label"
                         id="paid"
@@ -145,25 +117,27 @@ class FilterModal extends React.Component {
                         onChange={(e) => this.handlePaidChange(e)}
                         options={[
                             {
-                                label: 'Yes',
+                                label: 'Paid',
                                 value: true,
                             },
                             {
-                                label: 'No',
+                                label: 'Unpaid',
                                 value: false,
                             }
                         ]}
                         isClearable
                         value={paid === null ? null : {
-                            label: paid ? 'Yes' : 'No',
+                            label: paid ? 'Paid' : 'Unpaid',
                             value: paid
                         }}
                     />
+                    <br />
+                    <br />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={async () => {
                         await setFilterConditions([]);
-                        this.setState({ selectedBook: {}, selectedStudent: {}, paid: null, selectedDate: '' });
+                        this.setState({ selectedStudent: {}, paid: null, selectedDate: '' });
                     }}>Clear</Button>
                     <Button type="submit">Set Filter</Button>
                 </DialogActions>
@@ -175,9 +149,7 @@ class FilterModal extends React.Component {
 FilterModal.propTypes = {
     open: PropTypes.bool,
     handleClose: PropTypes.func,
-    getAllBooks: PropTypes.func,
     studentList: PropTypes.array,
-    bookList: PropTypes.array,
     setFilterConditions: PropTypes.func,
     filterConditions: PropTypes.array,
 }
