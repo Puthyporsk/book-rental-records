@@ -107,9 +107,6 @@ class RentalRecordTable extends React.Component {
         let tmpArray = [...rentalRecords];
         if (filterConditions.length !== 0) {
             filterConditions.forEach((filter) => {
-                if (filter.selectedBook) {
-                    tmpArray = tmpArray.filter((record) => record.book._id === filter.selectedBook._id);
-                }
                 if (filter.selectedStudent) {
                     tmpArray = tmpArray.filter((record) => record.student._id === filter.selectedStudent._id)
                 }
@@ -161,7 +158,7 @@ class RentalRecordTable extends React.Component {
                         <TableRow>
                             <TableCell>Student's Name</TableCell>
                             <TableCell align="right">Rental Date</TableCell>
-                            <TableCell align="right">Book Name</TableCell>
+                            <TableCell align="right">Purchased Items</TableCell>
                             <TableCell align="right">Payment Due</TableCell>
                             <TableCell align="right">Comment</TableCell>
                             <TableCell align="right">Paid</TableCell>
@@ -183,8 +180,8 @@ class RentalRecordTable extends React.Component {
                                                 {record.student.first_name} {record.student.last_name}
                                             </TableCell>
                                             <TableCell align="right">{moment(record.rental_date).utc().format("DD/MMM/YY")}</TableCell>
-                                            <TableCell align="right">{record.book.name}</TableCell>
-                                            <TableCell align="right">${record.payment_due}</TableCell>
+                                            <TableCell align="right">{record.purchased_items.map((item) => <p>{item.name}</p>)}</TableCell>
+                                            <TableCell align="right">${record.paid ? 0 : record.payment_due}</TableCell>
                                             <TableCell align="right">{record.comment}</TableCell>
                                             <TableCell align="right">
                                                 <Checkbox
