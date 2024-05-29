@@ -56,6 +56,32 @@
   margin: 5px;
 }
 
+.modal-button:hover {
+  cursor: pointer;
+  background-color: #c6c6c6;
+  border-radius: 0.5rem;
+}
+
+#filter-button {
+  margin-left: 5px;
+}
+
+#filter-button:hover {
+  cursor: pointer;
+  background-color: #c6c6c6;
+}
+
+.row-buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#row-edit-icon:hover, #row-delete-icon:hover {
+  cursor: pointer;
+  background-color: #c6c6c6;
+  border-radius: 0.2em;
+}
+
 .App-link {
   color: #61dafb;
 }

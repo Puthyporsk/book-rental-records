@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import {
+    Box,
     TextField,
     IconButton,
     Table,
@@ -12,6 +13,7 @@ import {
     TablePagination,
     Paper,
     Checkbox,
+    Tooltip,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import moment from "moment";
@@ -20,6 +22,8 @@ import FirstPageRoundedIcon from '@mui/icons-material/FirstPageRounded';
 import LastPageRoundedIcon from '@mui/icons-material/LastPageRounded';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
 
@@ -61,7 +65,7 @@ class RentalRecordTable extends React.Component {
         const { records } = this.state;
         try {
             const response = await fetch(
-              `${base_url}/api/rentalRecord/edit`,
+              `${base_url}/api/purchaseRecord/setPaymentStatus`,
               {
                 method: "PUT",
                 headers: {'Content-Type': 'application/json'},
@@ -92,7 +96,7 @@ class RentalRecordTable extends React.Component {
             return;
         }
         const filteredRecords = immutableRecords.filter((r) => r.student.first_name.toLowerCase().includes(value));
-        this.setState({ records: filteredRecords, searchWord:  value });
+        this.setState({ records: filteredRecords, searchWord:  value, page: 0 });
     }
     
     componentDidMount() {
@@ -116,13 +120,19 @@ class RentalRecordTable extends React.Component {
                 if (filter.rental_date) {
                     tmpArray = tmpArray.filter((record) => moment(record.rental_date).utc().format("MMM/YYY") === moment(filter.rental_date).utc().format("MMM/YYY"));
                 }
-                this.setState({ records: tmpArray });
+                this.setState({ records: tmpArray, page: 0 });
             })
         }
+        this.setState({ searchWord: '' });
     }
 
     render() {
-        const { isLoaded, setOpenFilter, filterConditions } = this.props;
+        const {
+            isLoaded,
+            setOpenFilter,
+            filterConditions,
+            handleRowEdit,
+        } = this.props;
         const {
             records,
             searchWord,
@@ -141,12 +151,17 @@ class RentalRecordTable extends React.Component {
                         value={searchWord}
                         onChange={(e) => this.debounce(this.handleSearchChange(e.target.value))}
                     />
-                    <IconButton onClick={() => {
-                        setOpenFilter(true);
-                        this.handleSearchChange('');
-                    }}>
+                    <Tooltip placement="top" title="Advanced Filter Options">
+                        <IconButton
+                            id="filter-button"
+                            onClick={() => {
+                                setOpenFilter(true);
+                                this.handleSearchChange('');
+                            }}
+                        >
                         <FilterAltIcon style={{ fill: "white" }} />
-                    </IconButton>
+                        </IconButton>
+                    </Tooltip>
                     <IconButton style={{ color: 'white '}}>
                         {filterConditions.length !== 0  ? filterConditions.length : ''}
                     </IconButton>
@@ -157,11 +172,12 @@ class RentalRecordTable extends React.Component {
                         <TableHead>
                         <TableRow>
                             <TableCell>Student's Name</TableCell>
-                            <TableCell align="right">Rental Date</TableCell>
-                            <TableCell align="right">Purchased Items</TableCell>
-                            <TableCell align="right">Payment Due</TableCell>
-                            <TableCell align="right">Comment</TableCell>
-                            <TableCell align="right">Paid</TableCell>
+                            <TableCell align="center">Rental Date</TableCell>
+                            <TableCell align="left">Purchased Items</TableCell>
+                            <TableCell align="left">Payment Due</TableCell>
+                            <TableCell align="left">Comment</TableCell>
+                            <TableCell align="center">Paid</TableCell>
+                            <TableCell align="right"></TableCell>
                         </TableRow>
                         </TableHead>
                         <TableBody>
@@ -179,15 +195,25 @@ class RentalRecordTable extends React.Component {
                                             <TableCell component="th" scope="row">
                                                 {record.student.first_name} {record.student.last_name}
                                             </TableCell>
-                                            <TableCell align="right">{moment(record.rental_date).utc().format("DD/MMM/YY")}</TableCell>
-                                            <TableCell align="right">{record.purchased_items.map((item) => <p>{item.name}</p>)}</TableCell>
-                                            <TableCell align="right">${record.paid ? 0 : record.payment_due}</TableCell>
-                                            <TableCell align="right">{record.comment}</TableCell>
-                                            <TableCell align="right">
+                                            <TableCell align="center">{moment(record.rental_date).utc().format("DD/MMM/YY")}</TableCell>
+                                            <TableCell align="left">{record.purchased_items.map((item) => <p>{item.name}</p>)}</TableCell>
+                                            <TableCell align="left">${record.paid ? 0 : record.payment_due}</TableCell>
+                                            <TableCell align="left">{record.comment}</TableCell>
+                                            <TableCell align="center">
                                                 <Checkbox
                                                     onClick={(e) => this.handlePaidCheckboxClicked(e, record)}
                                                     checked={record.paid}
                                                 />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Box className="row-buttons">
+                                                    <Tooltip placement="top" title="edit a purchase order">
+                                                        <EditIcon id="row-edit-icon" onClick={() => handleRowEdit(record)}  />
+                                                    </Tooltip>
+                                                    <Tooltip placement="top" title="delete a purchase order">
+                                                        <DeleteIcon id="row-delete-icon" />
+                                                    </Tooltip>
+                                                </Box>
                                             </TableCell>
                                         </TableRow>
                                     ))

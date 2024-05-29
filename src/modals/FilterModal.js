@@ -96,7 +96,6 @@ class FilterModal extends React.Component {
                     <br />
                     <label htmlFor="rental_date">Filter by Purchase Date</label>
                     <TextField
-                        autoFocus
                         margin="dense"
                         id="rental_date"
                         name="rental_date"

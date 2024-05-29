@@ -6,6 +6,7 @@ import AddStudentModal from './modals/AddStudentModal';
 import AddBookModal from './modals/AddBookModal';
 import AddRentalRecordModal from './modals/AddRentalRecordModal';
 import FilterModal from './modals/FilterModal';
+import EditRentalRecordModal from "./modals/EditRentalRecordModal";
 
 const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
 
@@ -22,11 +23,18 @@ class App extends React.Component {
       openBook: false,
       openRentalRecord: false,
       openFilter: false,
+      openEdit: false,
+      selectedRow: {},
     };
 
     this.getAllStudents = this.getAllStudents.bind(this);
     this.getAllBooks = this.getAllBooks.bind(this);
+    this.handleRowEdit = this.handleRowEdit.bind(this);
 
+  }
+
+  handleRowEdit(record) {
+    this.setState({ openEdit: true, selectedRow: record })
   }
 
   async getAllStudents() {
@@ -64,7 +72,7 @@ class App extends React.Component {
   async getAllRentalRecord() {
     try {
       const response = await fetch(
-        `${base_url}/api/rentalRecord/getAll`
+        `${base_url}/api/purchaseRecord/getAll`
       );
       const responseData = await response.json();
   
@@ -96,6 +104,8 @@ class App extends React.Component {
       openBook,
       openFilter,
       filterConditions,
+      openEdit,
+      selectedRow,
     } = this.state;
     return (
       <div>
@@ -118,6 +128,7 @@ class App extends React.Component {
               isLoaded={isLoaded}
               setOpenFilter={(value) => this.setState({ openFilter: value })}
               filterConditions={filterConditions}
+              handleRowEdit={this.handleRowEdit}
             />
           ) : (<>Loading...</>)}
           <AddStudentModal
@@ -149,6 +160,17 @@ class App extends React.Component {
             filterConditions={filterConditions}
             setFilterConditions={(value) => this.setState({ filterConditions: value })}
           />
+          { openEdit && 
+            <EditRentalRecordModal
+              open={openEdit}
+              handleClose={async () => {
+                  this.setState({ openEdit: false })
+                  this.getAllRentalRecord();
+                }}
+              records={selectedRow}
+              studentList={students}
+              bookList={books}
+          />}
         </body>
       </div>
     );

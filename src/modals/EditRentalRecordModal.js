@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -12,21 +13,26 @@ import { PropTypes } from "prop-types";
 
 const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
 
-class AddRentalRecordModal extends React.Component {
+class EditRentalRecordModal extends React.Component {
     constructor(props) {
         super(props);
+        const { student, purchased_items, rental_date, payment_due, comment, _id } = this.props.records;
         this.state = {
-            selectedStudent: {},
-            selectedItems: [],
-            totalPrice: 0,
+            selectedRecordID: _id,
+            selectedStudent: student,
+            selectedItems: purchased_items,
+            selectedDate: moment(rental_date).utc().format('YYYY-MM-DD'),
+            totalPrice: payment_due,
+            comment: comment,
         };
 
         this.closeModal = this.closeModal.bind(this);
     }
 
+
     closeModal() {
         const { handleClose } = this.props;
-        this.setState({ selectedItems: [], selectedStudent: {} });
+        this.setState({ selectedRecordID: '', selectedItems: [], selectedStudent: {}, selectedDate: '', totalPrice: 0, comment: '' });
         handleClose();
     }
 
@@ -69,10 +75,10 @@ class AddRentalRecordModal extends React.Component {
         }
     }
 
-    async createRentalRecord(body) {
+    async editPurchaseRecord(body) {
         const response = await fetch(
-          `${base_url}/api/purchaseRecord/create`, {
-            method: "POST",
+          `${base_url}/api/purchaseRecord/edit`, {
+            method: "PUT",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body),
           }
@@ -85,10 +91,11 @@ class AddRentalRecordModal extends React.Component {
     }
 
     render() {
-        const { selectedItems, selectedStudent, totalPrice } = this.state;
+        const { selectedItems, selectedStudent, totalPrice, selectedDate, comment, selectedRecordID } = this.state;
         const { open, studentList, bookList } = this.props;
         const studentOptions = studentList.map(item => { return { value: item._id, label: `${item.first_name} ${item.last_name}` }});
         const bookOptions = bookList.map(item => { return { value: item._id, label: item.name, price: item.price }});
+
         return (
             <Dialog
                 open={open}
@@ -100,6 +107,7 @@ class AddRentalRecordModal extends React.Component {
                     const formData = new FormData(event.currentTarget);
                     const recordJson = Object.fromEntries(formData.entries());
                     const body = {
+                        id: selectedRecordID,
                         student: selectedStudent,
                         purchased_items: selectedItems,
                         rental_date: recordJson.rental_date,
@@ -107,7 +115,7 @@ class AddRentalRecordModal extends React.Component {
                         comment: recordJson.comment,
                         paid: false,
                     };
-                    await this.createRentalRecord(body);
+                    await this.editPurchaseRecord(body);
                     selectedStudent.book_rental.push(selectedItems);
                     await this.editStudent(selectedStudent);
                     this.closeModal();
@@ -126,6 +134,7 @@ class AddRentalRecordModal extends React.Component {
                         options={studentOptions}
                         isClearable
                         required
+                        value={studentOptions.filter((student) => student.value === selectedStudent._id)[0]}
                     />
                     <br />
                     <InputLabel id="book-label">Select Item(s)</InputLabel>
@@ -149,6 +158,7 @@ class AddRentalRecordModal extends React.Component {
                                 }}
                             />
                         )}
+                        value={selectedItems.map((item)  => bookOptions.filter((i) => i.value === item._id)[0])}
                     />
                     <br />
                     <label htmlFor="rental_date">Purchase Date</label>
@@ -160,12 +170,12 @@ class AddRentalRecordModal extends React.Component {
                         type="date"
                         fullWidth
                         variant="standard"
+                        defaultValue={selectedDate}
                     />
                     <br />
                     <label htmlFor="payment_due">Payment Due</label>
                     <TextField
                         disabled
-                        autoFocus
                         required
                         margin="dense"
                         id="payment_due"
@@ -176,7 +186,6 @@ class AddRentalRecordModal extends React.Component {
                     />
                     <label htmlFor="comment">Comment</label>
                     <TextField
-                        autoFocus
                         margin="dense"
                         id="comment"
                         name="comment"
@@ -184,11 +193,13 @@ class AddRentalRecordModal extends React.Component {
                         type="string"
                         fullWidth
                         variant="standard"
+                        onChange={(e) => this.setState({ comment: e.target.value })}
+                        value={comment}
                     />
                 </DialogContent>
                 <DialogActions>
                 <Button onClick={this.closeModal}>Cancel</Button>
-                <Button type="submit">Add Purchase Record</Button>
+                <Button type="submit">Edit Purchase Record</Button>
                 </DialogActions>
             </Dialog>
         );
@@ -202,4 +213,4 @@ React.propTypes = {
     bookList: PropTypes.array,
 }
 
-export default AddRentalRecordModal;
+export default EditRentalRecordModal;
