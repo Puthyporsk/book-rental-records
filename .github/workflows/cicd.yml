@@ -4,7 +4,6 @@ on:
   push:
       branches:
           - production
-          - deployment-test
           
 jobs:
     build:
@@ -15,19 +14,10 @@ jobs:
             - name: Login to docker hub
               run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-            - name: Build Docker Image Production
-              if: contains(github.ref, 'production')
+            - name: Build Docker Image
               run: docker build -t puthyporsk0108/book-rental-record-frontend --build-arg REACT_APP_NODE_ENV='production' --build-arg REACT_APP_SERVER_BASE_URL='${{ secrets.REACT_APP_SERVER_BASE_URL }}' .
-            - name: Build Docker Image Deployment Test
-              if: contains(github.ref, 'deployment-test')
-              run: docker build -t puthyporsk0108/book-rental-record-frontend-test --build-arg REACT_APP_NODE_ENV='deployment-test' --build-arg REACT_APP_SERVER_BASE_URL='${{ secrets.REACT_APP_SERVER_BASE_URL_DEPLOYMENT_TEST }}' .
-            
-            - name: Publish Image to docker hub Production
-              if: contains(github.ref, 'production')
+            - name: Publish Image to docker hub
               run: docker push puthyporsk0108/book-rental-record-frontend:latest
-            - name: Publish Image to docker hub Deployment Test
-              if: contains(github.ref, 'deployment-test')
-              run: docker push puthyporsk0108/book-rental-record-frontend-test:latest
 
     deploy:
         needs: build
@@ -35,24 +25,12 @@ jobs:
         steps:
             - name: Login to docker hub
               run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            
-            - name: Pull image from docker hub Production
-              if: contains(github.ref, 'production')
+            - name: Pull image from docker hub
               run: docker pull puthyporsk0108/book-rental-record-frontend:latest
-            - name: Pull image from docker hub Deployment Test
-              if: contains(github.ref, 'deployment-test')
-              run: docker pull puthyporsk0108/book-rental-record-frontend-test:latest
-
             - name: Delete old container
               run: docker rm -f reactjs-app-container
-
-            - name: Run Docker Container Production
-              if: contains(github.ref, 'production')
+            - name: Run Docker Container
               run: docker run -d -p 3000:80 --name reactjs-app-container puthyporsk0108/book-rental-record-frontend
-            - name: Run Docker Container Deployment Test
-              if: contains(github.ref, 'deployment-test')
-              run: docker run -d -p 3000:80 --name reactjs-app-container puthyporsk0108/book-rental-record-frontend-test
-
             - name: Delete old image
               run: docker system prune -f
             
