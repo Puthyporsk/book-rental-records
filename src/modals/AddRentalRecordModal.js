@@ -6,7 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Autocomplete from '@mui/material/Autocomplete';
-import Select from 'react-select';
 import InputLabel from '@mui/material/InputLabel';
 import { PropTypes } from "prop-types";
 
@@ -34,7 +33,7 @@ class AddRentalRecordModal extends React.Component {
         const { studentList } = this.props;
         if (event) {
             let students = [];
-            v.map((student) => {
+            v.forEach((student) => {
                 students.push(studentList.filter((s) => s._id === student.value)[0]);
             });
             this.setState({ selectedStudent: students });
@@ -48,7 +47,7 @@ class AddRentalRecordModal extends React.Component {
         if (event) {
             let price = 0;
             let items = [];
-            v.map((item) => {
+            v.forEach((item) => {
                 price += item.price;
                 items.push(bookList.filter((book) => book._id === item.value)[0]);
             });
@@ -134,7 +133,7 @@ class AddRentalRecordModal extends React.Component {
                         getOptionLabel={(option) => option.label}
                         isOptionEqualToValue={(option, value) => option.value === value.value}
                         required
-                        getOptionDisabled={() => selectedStudent.length == 1 && selectedItems.length > 1}
+                        getOptionDisabled={() => selectedStudent.length === 1 && selectedItems.length > 1}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -154,7 +153,7 @@ class AddRentalRecordModal extends React.Component {
                         getOptionLabel={(option) => option.label}
                         isOptionEqualToValue={(option, value) => option.value === value.value}
                         required
-                        getOptionDisabled={() => selectedStudent.length > 1 && selectedItems.length == 1}
+                        getOptionDisabled={() => selectedStudent.length > 1 && selectedItems.length === 1}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
