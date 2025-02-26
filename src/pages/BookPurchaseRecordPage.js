@@ -1,15 +1,15 @@
 import React from 'react';
-import './App.css';
+import '../css/BookPurchaseRecordPage.css';
 
-import RentalRecordTable from './table/RentalRecordTable';
-import AddStudentModal from './modals/AddStudentModal';
-import AddBookModal from './modals/AddBookModal';
-import AddRentalRecordModal from './modals/AddRentalRecordModal';
-import FilterModal from './modals/FilterModal';
+import RentalRecordTable from '../table/RentalRecordTable';
+import AddStudentModal from '../modals/AddStudentModal';
+import AddBookModal from '../modals/AddBookModal';
+import AddRentalRecordModal from '../modals/AddRentalRecordModal';
+import FilterModal from '../modals/FilterModal';
 
 const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL
 
-class App extends React.Component {
+class BookPurchaseRecordPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -99,17 +99,8 @@ class App extends React.Component {
     } = this.state;
     return (
       <div>
-        <header className="App-header">
-          <div className='app-title'>
-            <span>Cherrywood Learning Academy</span>
-            <br />
-            <span style={{ fontSize: 16 }}>Student Book Purchase Record</span>
-          </div>
-          <div>
-            <button className='modal-button' onClick={() => this.setState({ openStudent: true })}>Add Student</button>
-            <button className='modal-button' onClick={() => this.setState({ openBook: true })}>Add Book</button>
-            <button className='modal-button' onClick={() => this.setState({ openRentalRecord: true })}>Add Purchase Record</button>
-          </div>
+        <header className="BookPurchaseRecordPage-header">
+          <span className="Title">Student Book Purchase Record</span>
         </header>
         <body style={{ minHeight: '90vh', overflow: 'auto', backgroundColor: '#212529' }}>
           { isLoaded ? (
@@ -118,6 +109,9 @@ class App extends React.Component {
               isLoaded={isLoaded}
               setOpenFilter={(value) => this.setState({ openFilter: value })}
               filterConditions={filterConditions}
+              handleOpenStudent={() => this.setState({ openStudent: true })}
+              handleOpenBook={() => this.setState({ openBook: true })}
+              handleOpenRentalRecord={() => this.setState({ openRentalRecord: true })}
             />
           ) : (<>Loading...</>)}
           <AddStudentModal
@@ -155,4 +149,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default BookPurchaseRecordPage;

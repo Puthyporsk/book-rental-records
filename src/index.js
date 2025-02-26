@@ -1,13 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
-import App from './App';
+import LoginPage from './pages/LoginPage';
+import BookPurchaseRecordPage from './pages/BookPurchaseRecordPage';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/homepage" element={<BookPurchaseRecordPage />} />
+      </Routes>
+    </BrowserRouter>
+    <header className="Page-header">
+      <span>Cherrywood Learning Academy</span>
+    </header>
+    <LoginPage />
   </React.StrictMode>
 );
 
