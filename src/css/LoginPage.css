@@ -1,0 +1,38 @@
+.login-title {
+    font-size: calc(4px + 2vmin);
+    color: white;
+    margin-top: 10vh;
+}
+
+.login-body {
+    background-color:rgb(33, 37, 41);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: white;
+    border: 2px solid white;
+    border-radius: 0.5rem;
+    margin-top: 10px;
+    margin-bottom: 60vh;
+    min-width: calc(90vw - 50%);
+    min-height: calc(40vh - 10px);
+    padding: 25px;
+}
+
+.login-button {
+    display: flex;
+    justify-content: center;
+}
+
+#login-btn {
+    background-color: rgb(33, 37, 41);
+    color: white;
+}

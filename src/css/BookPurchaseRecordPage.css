@@ -1,0 +1,43 @@
+.BookPurchaseRecordPage-header {
+  background-color: #282c34;
+  min-height: 5vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(4px + 2vmin);
+  color: white;
+}
+
+#search-field {
+  color: white;
+  border: 2px solid white;
+  border-radius: 0.5rem;
+}
+
+.records-table {
+  margin: 35px 35px 0px 35px;
+  padding-bottom: 35px;
+}
+
+.table-container {
+  background-color: bisque;
+  border-radius: 0.3rem;
+}
+
+.modal-button {
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  margin: 5px;
+}
+
+.table-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 35px 35px 0px 35px;
+}
+
+.Title {}
+

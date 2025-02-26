@@ -122,7 +122,12 @@ class RentalRecordTable extends React.Component {
     }
 
     render() {
-        const { isLoaded, setOpenFilter, filterConditions } = this.props;
+        const {
+            isLoaded, setOpenFilter, filterConditions,
+            handleOpenStudent,
+            handleOpenBook,
+            handleOpenRentalRecord
+        } = this.props;
         const {
             records,
             searchWord,
@@ -131,25 +136,32 @@ class RentalRecordTable extends React.Component {
         } = this.state;
         return (
             <Fragment>
-                <div className='search-bar'>
-                    <TextField
-                        id="search-field"
-                        className="text"
-                        variant="outlined"
-                        placeholder="Search for a student..."
-                        size="small"
-                        value={searchWord}
-                        onChange={(e) => this.debounce(this.handleSearchChange(e.target.value))}
-                    />
-                    <IconButton onClick={() => {
-                        setOpenFilter(true);
-                        this.handleSearchChange('');
-                    }}>
-                        <FilterAltIcon style={{ fill: "white" }} />
-                    </IconButton>
-                    <IconButton style={{ color: 'white '}}>
-                        {filterConditions.length !== 0  ? filterConditions.length : ''}
-                    </IconButton>
+                <div className="table-header-bar">
+                    <div className='search-bar'>
+                        <TextField
+                            id="search-field"
+                            className="text"
+                            variant="outlined"
+                            placeholder="Search for a student..."
+                            size="small"
+                            value={searchWord}
+                            onChange={(e) => this.debounce(this.handleSearchChange(e.target.value))}
+                        />
+                        <IconButton onClick={() => {
+                            setOpenFilter(true);
+                            this.handleSearchChange('');
+                        }}>
+                            <FilterAltIcon style={{ fill: "white" }} />
+                        </IconButton>
+                        <IconButton style={{ color: 'white '}}>
+                            {filterConditions.length !== 0  ? filterConditions.length : ''}
+                        </IconButton>
+                    </div>
+                    <div className="buttons-bar">
+                        <button className='modal-button' onClick={handleOpenStudent}>Add Student</button>
+                        <button className='modal-button' onClick={handleOpenBook}>Add Book</button>
+                        <button className='modal-button' onClick={handleOpenRentalRecord}>Add Purchase Record</button>
+                    </div>
                 </div>
                 <div className='records-table'>
                     <TableContainer className="table-container" component={Paper}>
@@ -232,6 +244,9 @@ React.propTypes = {
     rentalRecords: PropTypes.array,
     isLoaded: PropTypes.bool,
     setOpenFilter: PropTypes.func,
+    handleOpenStudent: PropTypes.func,
+    handleOpenBook: PropTypes.func,
+    handleOpenRentalRecord: PropTypes.func,
     filterConditions: PropTypes.Object,
 }
 
