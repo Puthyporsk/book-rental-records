@@ -29,6 +29,7 @@ class App extends React.Component {
 
   }
 
+  // Get All Students
   async getAllStudents() {
     try {
       const response = await fetch(
