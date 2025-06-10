@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.css": "/book-rental-records/static/css/main.9d00baca.css",
+    "main.js": "/book-rental-records/static/js/main.5c46e71b.js",
+    "static/js/206.f8819006.chunk.js": "/book-rental-records/static/js/206.f8819006.chunk.js",
+    "index.html": "/book-rental-records/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.9d00baca.css",
+    "static/js/main.5c46e71b.js"
+  ]
+}
