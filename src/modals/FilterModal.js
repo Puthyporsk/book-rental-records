@@ -138,6 +138,7 @@ class FilterModal extends React.Component {
                     <Button onClick={async () => {
                         await setFilterConditions([]);
                         this.setState({ selectedStudent: {}, paid: null, selectedDate: '' });
+                        handleClose();
                     }}>Clear</Button>
                     <Button type="submit">Set Filter</Button>
                 </DialogActions>

@@ -38,7 +38,6 @@ class RentalRecordTable extends React.Component {
         this.handlePaidCheckboxClicked = this.handlePaidCheckboxClicked.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
-        this.debounce = this.debounce.bind(this);
     }
 
     handleChangePage(event, newPage) {
@@ -49,14 +48,6 @@ class RentalRecordTable extends React.Component {
         this.setState({ rowsPerPage: parseInt(event.target.value, 10), page: 0 });
       };
 
-    debounce(fn, delay = 1000) { 
-        let timerId = null; 
-        return (...args) => { 
-            clearTimeout(timerId); 
-            timerId = setTimeout(() => fn(...args), delay); 
-        }; 
-    };
-    
     async handlePaidCheckboxClicked(e, rec) {
         const { records } = this.state;
         try {
@@ -88,23 +79,24 @@ class RentalRecordTable extends React.Component {
     handleSearchChange(value) {
         const { immutableRecords } = this.state;
         if (value.trim() === '') {
-            this.setState({ records: immutableRecords, searchWord:  value });
+            this.setState({ records: immutableRecords, searchWord: value, page: 0 });
             return;
         }
-        const filteredRecords = immutableRecords.filter((r) => r.student.first_name.toLowerCase().includes(value));
-        this.setState({ records: filteredRecords, searchWord:  value });
+        const filteredRecords = immutableRecords.filter((r) => `${r.student.first_name} ${r.student.last_name}`.toLowerCase().includes(value.toLowerCase()));
+        this.setState({ records: filteredRecords, searchWord: value, page: 0 });
     }
     
     componentDidMount() {
         const { rentalRecords } = this.props;
-        rentalRecords.sort((a, b) => a.student.first_name > b.student.first_name ? 1 : -1);
-        this.setState({ immutableRecords: rentalRecords, records: rentalRecords });
+        const sorted = [...rentalRecords].sort((a, b) => a.student.first_name.localeCompare(b.student.first_name) || a.student.last_name.localeCompare(b.student.last_name));
+        this.setState({ immutableRecords: sorted, records: sorted });
     }
 
     componentWillReceiveProps(newProps) {
         const { rentalRecords, filterConditions } = newProps;
-        this.setState({ immutableRecords: rentalRecords, records: rentalRecords });
-        let tmpArray = [...rentalRecords];
+        const sorted = [...rentalRecords].sort((a, b) => a.student.first_name.localeCompare(b.student.first_name) || a.student.last_name.localeCompare(b.student.last_name));
+        this.setState({ immutableRecords: sorted });
+        let tmpArray = [...sorted];
         if (filterConditions.length !== 0) {
             filterConditions.forEach((filter) => {
                 if (filter.selectedStudent) {
@@ -116,9 +108,9 @@ class RentalRecordTable extends React.Component {
                 if (filter.rental_date) {
                     tmpArray = tmpArray.filter((record) => moment(record.rental_date).utc().format("MMM/YYY") === moment(filter.rental_date).utc().format("MMM/YYY"));
                 }
-                this.setState({ records: tmpArray });
             })
         }
+        this.setState({ records: tmpArray, page: 0 });
     }
 
     render() {
@@ -139,7 +131,7 @@ class RentalRecordTable extends React.Component {
                         placeholder="Search for a student..."
                         size="small"
                         value={searchWord}
-                        onChange={(e) => this.debounce(this.handleSearchChange(e.target.value))}
+                        onChange={(e) => this.handleSearchChange(e.target.value)}
                     />
                     <IconButton onClick={() => {
                         setOpenFilter(true);
